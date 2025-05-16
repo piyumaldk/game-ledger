@@ -1,0 +1,164 @@
+body, html {
+    margin: 0; padding: 0; height: 100%;
+    color: #222;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: flex-start;  
+    align-items: flex-start;
+    padding: 0px 40px;
+    box-sizing: border-box;
+    min-height: 90vh;
+    scrollbar-width: thin;
+    scrollbar-color: #b22222 black; 
+}
+
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+    width: 12px;
+    margin-right: 6px; 
+}
+
+body::-webkit-scrollbar-track,
+html::-webkit-scrollbar-track {
+    background: black;
+}
+
+body::-webkit-scrollbar-thumb,
+html::-webkit-scrollbar-thumb {
+    background-color: #b22222;
+    border-radius: 12px;
+    border: 3px solid black; 
+}
+
+body::-webkit-scrollbar-thumb:hover,
+html::-webkit-scrollbar-thumb:hover {
+    background-color: #ff4444; 
+}
+
+main {
+    width: auto;
+    min-width: 540px;  
+    background: linear-gradient(to right, #fff 55%, #ffe3e3 100%);
+    padding: 30px 40px 40px 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgb(255 85 85 / 0.15);
+    user-select: none;
+    box-sizing: border-box;
+    text-align: left;
+    margin-left: 0;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    color: #b22222;
+    margin: 0 0 30px 0;
+    text-align: left;
+    white-space: nowrap; 
+}
+
+.progress-container {
+    position: relative;
+    width: 4.5rem;
+    height: 4.5rem;
+    margin: 0 0 30px 0;
+}
+
+.progress-circle-bg,
+.progress-circle-fg {
+    fill: none;
+    stroke-width: 4;
+    cx: 36;
+    cy: 36;
+    r: 30;
+}
+
+.progress-circle-bg {
+    stroke: #ddd;
+}
+
+.progress-circle-fg {
+    stroke: #b22222;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 0.4s ease;
+}
+
+.progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #b22222;
+    user-select: none;
+}
+
+section h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    margin-top: 40px;
+    color: #b22222;
+    user-select: none;
+    text-align: left;
+}
+
+label {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s ease;
+    justify-content: flex-start;
+    user-select: none;
+    text-align: left;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff;
+    border: 2.5px solid #aaa;
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+input[type="checkbox"]:checked {
+    background-color: #b22222;
+    border-color: #b22222;
+}
+input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 11px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+input[type="checkbox"]:checked + span {
+    color: #b22222;
+    font-weight: 600;
+}
+
+label > span {
+    flex-grow: 1;
+    text-align: left;
+    transition: color 0.3s ease;
+}
