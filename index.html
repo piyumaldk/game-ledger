@@ -70,15 +70,15 @@
       padding: 8px;
       border-radius: 6px;
       color: #ddd;
-      transition: background 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease;
     }
     .menu-item:hover {
       background-color: #333;
       color: #fff;
     }
     .menu-item.active {
-      background-color: #ff5555;
-      color: #fff;
+      background-color: #333;
+      color: #ff5555;
     }
 
     .content {
@@ -216,8 +216,9 @@
       const searchInput = document.getElementById('searchInput');
 
       const clickHistory = JSON.parse(localStorage.getItem('gameClickHistory') || '[]');
-      const uniqueHistory = [...new Set(clickHistory)];
+      const currentActiveGame = localStorage.getItem('currentActiveGame') || null;
 
+      const uniqueHistory = [...new Set(clickHistory)];
       const clickedGames = uniqueHistory.filter(game => gameList.includes(game));
       const unclickedGames = gameList.filter(game => !clickedGames.includes(game)).sort((a, b) => a.localeCompare(b));
 
@@ -230,24 +231,25 @@
         div.className = 'menu-item';
         div.textContent = gameName;
         div.setAttribute('data-name', gameName);
-        menuList.appendChild(div);
+
+        if (gameName === currentActiveGame) {
+          div.classList.add('active');
+        }
 
         div.addEventListener('click', () => {
           const fileName = slugify(gameName);
           document.getElementById('gameFrame').src = `games/${fileName}.html`;
           document.getElementById('landing').classList.add('hidden');
 
-          document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-          });
-          div.classList.add('active');
-
           const currentHistory = JSON.parse(localStorage.getItem('gameClickHistory') || '[]');
           const updatedHistory = [gameName, ...currentHistory.filter(item => item !== gameName)];
           localStorage.setItem('gameClickHistory', JSON.stringify(updatedHistory));
+          localStorage.setItem('currentActiveGame', gameName);
 
-          loadMenu(); 
+          loadMenu();
         });
+
+        menuList.appendChild(div);
       });
 
       searchInput.addEventListener('input', () => {
@@ -264,9 +266,8 @@
     document.getElementById('homeButton').addEventListener('click', () => {
       document.getElementById('gameFrame').src = '';
       document.getElementById('landing').classList.remove('hidden');
-      document.querySelectorAll('.menu-item').forEach(item => {
-        item.classList.remove('active');
-      });
+      localStorage.removeItem('currentActiveGame');
+      loadMenu();
     });
   </script>
 </body>
