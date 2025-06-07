@@ -210,13 +210,12 @@
       return name.toLowerCase().replace(/[^a-z0-9]/g, '');
     }
 
-    function loadMenu() {
+    function loadMenu(activeGame = null) {
       const gameList = JSON.parse(document.getElementById('game-list').textContent);
       const menuList = document.getElementById('menu-list');
       const searchInput = document.getElementById('searchInput');
 
       const clickHistory = JSON.parse(localStorage.getItem('gameClickHistory') || '[]');
-      const currentActiveGame = localStorage.getItem('currentActiveGame') || null;
 
       const uniqueHistory = [...new Set(clickHistory)];
       const clickedGames = uniqueHistory.filter(game => gameList.includes(game));
@@ -224,7 +223,7 @@
 
       const finalList = [...clickedGames, ...unclickedGames];
 
-      menuList.innerHTML = ''; 
+      menuList.innerHTML = '';
 
       finalList.forEach(gameName => {
         const div = document.createElement('div');
@@ -232,7 +231,7 @@
         div.textContent = gameName;
         div.setAttribute('data-name', gameName);
 
-        if (gameName === currentActiveGame) {
+        if (activeGame && gameName === activeGame) {
           div.classList.add('active');
         }
 
@@ -246,7 +245,7 @@
           localStorage.setItem('gameClickHistory', JSON.stringify(updatedHistory));
           localStorage.setItem('currentActiveGame', gameName);
 
-          loadMenu();
+          loadMenu(gameName);
         });
 
         menuList.appendChild(div);
@@ -261,13 +260,18 @@
       });
     }
 
-    loadMenu();
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('gameFrame').src = '';
+      document.getElementById('landing').classList.remove('hidden');
+      localStorage.removeItem('currentActiveGame');
+      loadMenu(null);
+    });
 
     document.getElementById('homeButton').addEventListener('click', () => {
       document.getElementById('gameFrame').src = '';
       document.getElementById('landing').classList.remove('hidden');
-      localStorage.removeItem('currentActiveGame');
-      loadMenu();
+      localStorage.removeItem('currentActiveGame'); 
+      loadMenu(null);
     });
   </script>
 </body>
