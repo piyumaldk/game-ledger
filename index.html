@@ -201,7 +201,6 @@
     window.addEventListener('load', () => {
       const loader = document.getElementById('loader');
       loader.classList.add('fade-out');
-
       setTimeout(() => {
         loader.style.display = 'none';
       }, 500);
@@ -216,11 +215,17 @@
       const menuList = document.getElementById('menu-list');
       const searchInput = document.getElementById('searchInput');
 
-      const sortedGames = gameList.sort((a, b) =>
-        a.toLowerCase().localeCompare(b.toLowerCase())
-      );
+      const clickHistory = JSON.parse(localStorage.getItem('gameClickHistory') || '[]');
+      const uniqueHistory = [...new Set(clickHistory)];
 
-      sortedGames.forEach(gameName => {
+      const clickedGames = uniqueHistory.filter(game => gameList.includes(game));
+      const unclickedGames = gameList.filter(game => !clickedGames.includes(game)).sort((a, b) => a.localeCompare(b));
+
+      const finalList = [...clickedGames, ...unclickedGames];
+
+      menuList.innerHTML = ''; 
+
+      finalList.forEach(gameName => {
         const div = document.createElement('div');
         div.className = 'menu-item';
         div.textContent = gameName;
@@ -235,8 +240,13 @@
           document.querySelectorAll('.menu-item').forEach(item => {
             item.classList.remove('active');
           });
-
           div.classList.add('active');
+
+          const currentHistory = JSON.parse(localStorage.getItem('gameClickHistory') || '[]');
+          const updatedHistory = [gameName, ...currentHistory.filter(item => item !== gameName)];
+          localStorage.setItem('gameClickHistory', JSON.stringify(updatedHistory));
+
+          loadMenu(); 
         });
       });
 
