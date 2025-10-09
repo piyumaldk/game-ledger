@@ -46,6 +46,7 @@
       flex-direction: column;
       border-right: 2px solid #333;
       z-index: 10;
+      transition: width 0.3s ease;
     }
     .sidebar h2 {
       margin-bottom: 20px;
@@ -74,6 +75,7 @@
       border-radius: 6px;
       color: #ddd;
       transition: background 0.2s ease, color 0.2s ease;
+      white-space: nowrap;
     }
     .menu-item:hover {
       background-color: #333;
@@ -213,6 +215,25 @@
       return name.toLowerCase().replace(/[^a-z0-9]/g, '');
     }
 
+    function adjustSidebarWidth() {
+      const sidebar = document.querySelector('.sidebar');
+      const items = document.querySelectorAll('.menu-item');
+      let maxWidth = 0;
+
+      items.forEach(item => {
+        const span = document.createElement('span');
+        span.style.visibility = 'hidden';
+        span.style.position = 'absolute';
+        span.style.whiteSpace = 'nowrap';
+        span.textContent = item.textContent;
+        document.body.appendChild(span);
+        maxWidth = Math.max(maxWidth, span.offsetWidth);
+        document.body.removeChild(span);
+      });
+
+      sidebar.style.width = `${maxWidth + 60}px`;
+    }
+
     function loadMenu(activeGame = null) {
       const gameList = JSON.parse(document.getElementById('game-list').textContent);
       const menuList = document.getElementById('menu-list');
@@ -261,6 +282,8 @@
           item.style.display = name.includes(query) ? '' : 'none';
         });
       });
+
+      adjustSidebarWidth();
     }
 
     window.addEventListener('DOMContentLoaded', () => {
