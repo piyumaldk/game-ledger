@@ -42,6 +42,18 @@
       overflow: hidden;
     }
 
+    /* Sidebar backdrop for mobile */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 19;
+    }
+    .sidebar-backdrop.active {
+      display: block;
+    }
+
     /* Sidebar */
     .sidebar {
       width: 280px;
@@ -54,12 +66,15 @@
       transition: transform 0.3s ease, width 0.3s ease;
     }
 
-    /* Hidden on mobile */
+    /* Mobile styles */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
         height: 100%;
+        width: 85%;
+        max-width: 320px;
         transform: translateX(-100%);
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
       }
       .sidebar.open {
         transform: translateX(0);
@@ -95,7 +110,9 @@
       border-radius: 6px;
       color: #ddd;
       transition: background 0.2s ease, color 0.2s ease;
-      white-space: nowrap;
+      word-wrap: break-word;
+      white-space: normal;
+      line-height: 1.4;
     }
     .menu-item:hover {
       background-color: #333;
@@ -116,6 +133,12 @@
       overflow: hidden;
     }
 
+    @media (max-width: 768px) {
+      .content {
+        width: 100%;
+      }
+    }
+
     iframe {
       flex-grow: 1;
       width: 100%;
@@ -134,6 +157,7 @@
       flex-direction: column;
       z-index: 5;
       pointer-events: none;
+      padding: 20px;
     }
     .landing h1 {
       font-family: 'Orbitron', sans-serif;
@@ -144,6 +168,8 @@
       border-radius: 12px;
       text-shadow: 0 0 10px #ff5555, 0 0 20px #ff5555;
       box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      word-wrap: break-word;
     }
     .hidden {
       display: none;
@@ -151,8 +177,15 @@
 
     @media (max-width: 768px) {
       .landing h1 {
-        font-size: 2.2rem;
-        padding: 15px 25px;
+        font-size: 2rem;
+        padding: 15px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .landing h1 {
+        font-size: 1.5rem;
+        padding: 12px 16px;
       }
     }
 
@@ -195,17 +228,22 @@
     /* Mobile toggle button */
     #toggleSidebar {
       display: none;
-      position: absolute;
+      position: fixed;
       top: 12px;
       left: 12px;
       background: #ff5555;
       border: none;
-      padding: 8px 12px;
+      padding: 10px 14px;
       border-radius: 6px;
       color: white;
-      font-size: 16px;
+      font-size: 18px;
       z-index: 25;
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(255, 85, 85, 0.4);
+      transition: background 0.2s ease;
+    }
+    #toggleSidebar:active {
+      background: #ff3333;
     }
     @media (max-width: 768px) {
       #toggleSidebar {
@@ -222,6 +260,8 @@
   </div>
 
   <button id="toggleSidebar">☰</button>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <div class="sidebar" id="sidebar">
     <h2 id="homeButton">GAME LEDGER</h2>
@@ -247,35 +287,53 @@
       setTimeout(() => loader.style.display = 'none', 500);
     });
 
-    /* NEW: Toggle sidebar on mobile */
     const toggleBtn = document.getElementById('toggleSidebar');
     const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      backdrop.classList.remove('active');
+    }
+
+    function openSidebar() {
+      sidebar.classList.add('open');
+      backdrop.classList.add('active');
+    }
 
     toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
+      if (sidebar.classList.contains('open')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
     });
+
+    backdrop.addEventListener('click', closeSidebar);
 
     function slugify(name) {
       return name.toLowerCase().replace(/[^a-z0-9]/g, '');
     }
 
     function adjustSidebarWidth() {
-      const sidebar = document.querySelector('.sidebar');
-      const items = document.querySelectorAll('.menu-item');
-      let maxWidth = 0;
+      if (window.innerWidth > 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const items = document.querySelectorAll('.menu-item');
+        let maxWidth = 0;
 
-      items.forEach(item => {
-        const span = document.createElement('span');
-        span.style.visibility = 'hidden';
-        span.style.position = 'absolute';
-        span.style.whiteSpace = 'nowrap';
-        span.textContent = item.textContent;
-        document.body.appendChild(span);
-        maxWidth = Math.max(maxWidth, span.offsetWidth);
-        document.body.removeChild(span);
-      });
+        items.forEach(item => {
+          const span = document.createElement('span');
+          span.style.visibility = 'hidden';
+          span.style.position = 'absolute';
+          span.style.whiteSpace = 'nowrap';
+          span.textContent = item.textContent;
+          document.body.appendChild(span);
+          maxWidth = Math.max(maxWidth, span.offsetWidth);
+          document.body.removeChild(span);
+        });
 
-      sidebar.style.width = `${maxWidth + 60}px`;
+        sidebar.style.width = `${maxWidth + 60}px`;
+      }
     }
 
     function loadMenu(activeGame = null) {
@@ -315,8 +373,9 @@
 
           loadMenu(gameName);
 
-          /* NEW: Auto close sidebar after click on mobile */
-          if (window.innerWidth <= 768) sidebar.classList.remove('open');
+          if (window.innerWidth <= 768) {
+            closeSidebar();
+          }
         });
 
         menuList.appendChild(div);
@@ -346,8 +405,12 @@
       localStorage.removeItem('currentActiveGame');
       loadMenu(null);
 
-      if (window.innerWidth <= 768) sidebar.classList.remove('open');
+      if (window.innerWidth <= 768) {
+        closeSidebar();
+      }
     });
+
+    window.addEventListener('resize', adjustSidebarWidth);
   </script>
 </body>
 </html>
